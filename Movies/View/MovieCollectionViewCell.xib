@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="movieCell" id="gTV-IL-0wX" customClass="MovieCollectionViewCell" customModule="Movies" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Rgg-wJ-3Aa">
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="179.5"/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="eQo-Nn-la2">
+                        <rect key="frame" x="0.0" y="179.5" width="200" height="20.5"/>
+                        <color key="backgroundColor" red="0.87687555959999997" green="0.87687555959999997" blue="0.87687555959999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="Rgg-wJ-3Aa" secondAttribute="trailing" id="1M2-5H-fjg"/>
+                <constraint firstItem="eQo-Nn-la2" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="9t2-Bx-0b5"/>
+                <constraint firstAttribute="bottom" secondItem="eQo-Nn-la2" secondAttribute="bottom" id="IbA-OR-uvm"/>
+                <constraint firstItem="eQo-Nn-la2" firstAttribute="top" secondItem="Rgg-wJ-3Aa" secondAttribute="bottom" id="OL5-sn-RWy"/>
+                <constraint firstAttribute="trailing" secondItem="eQo-Nn-la2" secondAttribute="trailing" id="TJu-CW-RrG"/>
+                <constraint firstItem="Rgg-wJ-3Aa" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="eHk-s6-1Mf"/>
+                <constraint firstItem="Rgg-wJ-3Aa" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="w7U-Zr-4n4"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <connections>
+                <outlet property="movieImage" destination="Rgg-wJ-3Aa" id="SsK-Z1-mVy"/>
+                <outlet property="movieTitle" destination="eQo-Nn-la2" id="n2K-D2-SAl"/>
+            </connections>
+        </collectionViewCell>
+    </objects>
+</document>
