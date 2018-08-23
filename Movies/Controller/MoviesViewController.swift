@@ -12,7 +12,7 @@ import SwiftyJSON
 import Kingfisher
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class MoviesViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tabBar: UITabBar!
@@ -35,10 +35,18 @@ class MoviesViewController: UIViewController, UICollectionViewDelegate, UICollec
     }
     
     func getTopRatedMovies() {
+        getMovies(Datasource.topRatedMoviesURL!, .TopRated)
+    }
+    
+    func getPopularMovies() {
+        getMovies(Datasource.popularMoviesURL!, .Popular)
+    }
+    
+    func getMovies(_ url: URL, _ movieType: MovieType) {
         let loadingNotification = MBProgressHUD.showAdded(to: view, animated: true)
         loadingNotification.isUserInteractionEnabled = false
         
-        Alamofire.request(Datasource.topRatedMoviesURL!, method: .get, parameters: Datasource.params).responseJSON { (response) in
+        Alamofire.request(url, method: .get, parameters: Datasource.params).responseJSON { (response) in
             
             MBProgressHUD.hide(for: self.view, animated: true)
             
@@ -49,35 +57,39 @@ class MoviesViewController: UIViewController, UICollectionViewDelegate, UICollec
                 let data = try? JSONSerialization.data(withJSONObject: results.object, options: .prettyPrinted)
                 
                 let decoder = JSONDecoder()
-                self.topRatedMovies = try! decoder.decode([Movie].self, from: data!)
-
-                self.collectionView.reloadData()
+                
+                if let data = data {
+                    if movieType == .TopRated {
+                        do {
+                            self.topRatedMovies = try decoder.decode([Movie].self, from: data)
+                        }
+                        catch {
+                            print("Error: \(error)")
+                        }
+                    }
+                    else {
+                        do {
+                            self.popularMovies = try decoder.decode([Movie].self, from: data)
+                        }
+                        catch {
+                            print("Error: \(error)")
+                        }
+                    }
+                    
+                    self.collectionView.reloadData()
+                }
             }
         }
     }
     
-    func getPopularMovies() {
-        let loadingNotification = MBProgressHUD.showAdded(to: view, animated: true)
-        loadingNotification.isUserInteractionEnabled = false
-        
-        Alamofire.request(Datasource.popularMoviesURL!, method: .get, parameters: Datasource.params).responseJSON { (response) in
-            
-            MBProgressHUD.hide(for: self.view, animated: true)
-            
-            if response.result.isSuccess {
-                var results = JSON(response.result.value!)
-                results = results["results"]
-                
-                let data = try? JSONSerialization.data(withJSONObject: results.object, options: .prettyPrinted)
-                
-                let decoder = JSONDecoder()
-                self.popularMovies = try! decoder.decode([Movie].self, from: data!)
-                
-                self.collectionView.reloadData()
-            }
-        }
+    enum MovieType {
+        case TopRated
+        case Popular
     }
 
+}
+
+extension MoviesViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return tabBar.tag == 0 ? topRatedMovies.count : popularMovies.count
     }
@@ -97,7 +109,7 @@ class MoviesViewController: UIViewController, UICollectionViewDelegate, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width/2, height: 150)
+        return CGSize(width: collectionView.frame.width/2, height: 200)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -122,7 +134,6 @@ class MoviesViewController: UIViewController, UICollectionViewDelegate, UICollec
         }
         self.navigationController?.pushViewController(movieDetailsVC, animated: true)
     }
-
 }
 
 extension MoviesViewController: UITabBarDelegate {
