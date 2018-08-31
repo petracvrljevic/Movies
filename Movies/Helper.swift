@@ -2,7 +2,7 @@
 //  Helper.swift
 //  Movies
 //
-//  Created by Petra Cvrljevic on 22/08/2018.
+//  Created by Petra Cvrljevic on 31/08/2018.
 //  Copyright © 2018 Petra Cvrljevic. All rights reserved.
 //
 
@@ -10,7 +10,6 @@ import UIKit
 import Alamofire
 
 class Helper: NSObject {
-    
     static let apiKey = "fe3b8cf16d78a0e23f0c509d8c37caad"
     static let params: Parameters = ["api_key": apiKey]
     

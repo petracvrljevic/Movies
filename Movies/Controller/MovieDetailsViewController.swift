@@ -44,7 +44,7 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDelegate, UI
     }
 
     func downloadMovieDetails(_ id: Int) {
-        Alamofire.request(Datasource.movieDetailsURL(id), method: .get, parameters: Datasource.params).responseJSON { (response) in
+        Alamofire.request(Helper.movieDetailsURL(id), method: .get, parameters: Helper.params).responseJSON { (response) in
             
             if response.result.isSuccess {
                 var results = JSON(response.result.value!)
@@ -54,10 +54,10 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDelegate, UI
                 let decoder = JSONDecoder()
                 let movie = try! decoder.decode(Movie.self, from: data!)
                 
-                self.posterImage.kf.setImage(with: URL(string: Datasource.imageURL + movie.posterPath))
+                self.posterImage.kf.setImage(with: URL(string: Helper.imageURL + movie.posterPath))
                 self.titleLabel.text = movie.title
                 self.releaseLabel.text = movie.releaseDate
-                self.coverImage.kf.setImage(with: URL(string: Datasource.imageURL + movie.backdropPath!))
+                self.coverImage.kf.setImage(with: URL(string: Helper.imageURL + movie.backdropPath!))
                 self.overviewTextView.text = movie.overview
                 
                 var movieGenres = [String]()
@@ -74,7 +74,7 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDelegate, UI
     
     func downloadSimilarMovies() {
         guard let movieID = movieID else { return }
-        Alamofire.request(Datasource.similarMoviesURL(movieID), method: .get, parameters: Datasource.params).responseJSON { (response) in
+        Alamofire.request(Helper.similarMoviesURL(movieID), method: .get, parameters: Helper.params).responseJSON { (response) in
             
             if response.result.isSuccess {
                 var results = JSON(response.result.value!)
@@ -96,7 +96,7 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDelegate, UI
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "similarMovieCell", for: indexPath) as! SimilarMovieCollectionViewCell
         let similarMovie = similarMovies[indexPath.row]
-        cell.movieImage.kf.setImage(with: URL(string: Datasource.imageURL + similarMovie.posterPath), placeholder: UIImage(named: "defaultImage"), options: nil, progressBlock: nil, completionHandler: nil)
+        cell.movieImage.kf.setImage(with: URL(string: Helper.imageURL + similarMovie.posterPath), placeholder: UIImage(named: "defaultImage"), options: nil, progressBlock: nil, completionHandler: nil)
         return cell
     }
 

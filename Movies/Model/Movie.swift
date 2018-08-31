@@ -22,7 +22,7 @@ struct Movie: Codable {
         case id
         case title
         case posterPath = "poster_path"
-        case genres = "genres"
+        case genres 
         case backdropPath = "backdrop_path"
         case adult
         case overview

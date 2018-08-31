@@ -13,14 +13,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         
-        let moviesVC = MoviesViewController()
-        moviesVC.navigationItem.title = "Top rated movies"
-        window?.rootViewController = UINavigationController(rootViewController: moviesVC)
+        let tabBarVC = UITabBarController()
+        tabBarVC.viewControllers = setup()
+        window?.rootViewController = tabBarVC
         window?.makeKeyAndVisible()
         
         return true
@@ -47,7 +46,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
+    
+    func setup() -> [UINavigationController] {
+        let topRatedMoviesVC = MoviesViewController()
+        topRatedMoviesVC.navigationItem.title = "Top rated movies"
+        topRatedMoviesVC.type = MovieType.TopRated
+        let navTopRated = UINavigationController(rootViewController: topRatedMoviesVC)
+        navTopRated.tabBarItem.title = "Top rated"
+        let popularMovieVC = MoviesViewController()
+        popularMovieVC.navigationItem.title = "Popular movies"
+        popularMovieVC.type = MovieType.Popular
+        let navPopular = UINavigationController(rootViewController: popularMovieVC)
+        navPopular.tabBarItem.title = "Popular"
+        let controllers = [navTopRated, navPopular]
+        return controllers
+    }
 }
 
+enum MovieType {
+    case TopRated
+    case Popular
+}

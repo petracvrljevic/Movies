@@ -15,53 +15,51 @@ import MBProgressHUD
 class MoviesViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var tabBar: UITabBar!
     
     var topRatedMovies = [Movie]()
     var popularMovies = [Movie]()
     
+    var type: MovieType?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBar.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
         
         collectionView.register(UINib(nibName: "MovieCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "movieCell")
         
-        tabBar.selectedItem = tabBar.items?[0]
         getTopRatedMovies()
         getPopularMovies()
     }
     
     func getTopRatedMovies() {
-        getMovies(Datasource.topRatedMoviesURL!, .TopRated)
+        getMovies(Helper.topRatedMoviesURL, .TopRated)
     }
     
     func getPopularMovies() {
-        getMovies(Datasource.popularMoviesURL!, .Popular)
+        getMovies(Helper.popularMoviesURL, .Popular)
     }
     
     func getMovies(_ url: URL, _ movieType: MovieType) {
         let loadingNotification = MBProgressHUD.showAdded(to: view, animated: true)
         loadingNotification.isUserInteractionEnabled = false
         
-        Alamofire.request(url, method: .get, parameters: Datasource.params).responseJSON { (response) in
+        Alamofire.request(url, method: .get, parameters: Helper.params).responseJSON { (response) in
             
             MBProgressHUD.hide(for: self.view, animated: true)
             
-            if response.result.isSuccess {
-                var results = JSON(response.result.value!)
-                results = results["results"]
-                
-                let data = try? JSONSerialization.data(withJSONObject: results.object, options: .prettyPrinted)
-                
+            switch response.result {
+            case .failure(let error):
+                print(error)
+            case .success:
                 let decoder = JSONDecoder()
                 
-                if let data = data {
+                if let result = response.data {
                     if movieType == .TopRated {
                         do {
-                            self.topRatedMovies = try decoder.decode([Movie].self, from: data)
+                            let movies = try decoder.decode(Movies.self, from: result)
+                            self.topRatedMovies = movies.results
                         }
                         catch {
                             print("Error: \(error)")
@@ -69,7 +67,8 @@ class MoviesViewController: UIViewController {
                     }
                     else {
                         do {
-                            self.popularMovies = try decoder.decode([Movie].self, from: data)
+                            let movies = try decoder.decode(Movies.self, from: result)
+                            self.popularMovies = movies.results
                         }
                         catch {
                             print("Error: \(error)")
@@ -81,35 +80,33 @@ class MoviesViewController: UIViewController {
             }
         }
     }
-    
-    enum MovieType {
-        case TopRated
-        case Popular
-    }
-
 }
 
 extension MoviesViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tabBar.tag == 0 ? topRatedMovies.count : popularMovies.count
+        if let movieType = type {
+            return movieType == .TopRated ? topRatedMovies.count : popularMovies.count
+        }
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "movieCell", for: indexPath) as! MovieCollectionViewCell
         var movie: Movie
-        if tabBar.selectedItem == tabBar.items![0] {
+        guard let movieType = type else { return UICollectionViewCell() }
+        if movieType == .TopRated {
             movie = topRatedMovies[indexPath.row]
         }
         else {
             movie = popularMovies[indexPath.row]
         }
-        cell.movieImage.kf.setImage(with: URL(string: Datasource.imageURL + movie.posterPath))
+        cell.movieImage.kf.setImage(with: URL(string: Helper.imageURL + movie.posterPath))
         cell.movieTitle.text = movie.title
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width/2, height: 200)
+        return CGSize(width: collectionView.frame.width/2, height: 180)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -126,25 +123,13 @@ extension MoviesViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let movieDetailsVC = MovieDetailsViewController()
-        if tabBar.selectedItem == tabBar.items![0] {
+        guard let movieType = type else { return }
+        if movieType == .TopRated {
             movieDetailsVC.movieID = topRatedMovies[indexPath.row].id
         }
         else {
             movieDetailsVC.movieID = popularMovies[indexPath.row].id
         }
         self.navigationController?.pushViewController(movieDetailsVC, animated: true)
-    }
-}
-
-extension MoviesViewController: UITabBarDelegate {
-    func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        if item == tabBar.items![0] {
-            self.navigationItem.title = "Top rated movies"
-        }
-        else {
-            self.navigationItem.title = "Popular movies"
-        }
-        collectionView.reloadData()
-        collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .centeredVertically, animated: true)
     }
 }
